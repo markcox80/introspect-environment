@@ -33,7 +33,16 @@
 			  #:parse-macro)
   . #.*%ie-export-forms%*)
 
-#- (or ccl sbcl)
+#+cmucl
+(defpackage #:introspect-environment
+  (:use #:cl)
+  (:shadowing-import-from "EXT"
+			  #:function-information
+			  #:variable-information
+			  #:declaration-information)
+  . #.*%ie-export-forms%*)
+
+#- (or ccl sbcl cmucl)
 (defpackage #:introspect-environment
   (:use #:cl)
   . #.*%ie-export-forms%*)
