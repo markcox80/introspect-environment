@@ -84,14 +84,15 @@
 (test constant-form-value
   (is-false (constant-form-value nil))
   (is-true (constant-form-value '+y+))
-  (multiple-value-bind (xv yv)
+  (multiple-value-bind (cv xv yv)
       (in-environment
 	  env testmacro
 	  (symbol-macrolet ((x nil))
 	    (testmacro))
-	(assert (constantp 'x env))
-	(values (constant-form-value 'x env)
+	(values (constant-form-p 'x env)
+		(constant-form-value 'x env)
 		(constant-form-value '+y+ env)))
+    (is-true cv)
     (is-false xv)
     (is-true yv)))
 

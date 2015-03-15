@@ -17,9 +17,14 @@
   (or (cdr (assoc 'ftype (nth-value 2 (function-information name env))))
       '(function * *)))
 
+(defun constant-form-p (form &optional env)
+  (constantp (macroexpand form env) env))
+
 (defun constant-form-value (form &optional env)
-  (declare (ignore env))
-  (ccl::eval-constant form))
+  (let ((expanded-form (macroexpand form env)))
+    (if (constant-form-p expanded-form)      
+	(ccl::eval-constant expanded-form)
+	(error "Form ~A is not constant." form))))
 
 (defun policy-quality (quality &optional env)
   (or (second (assoc quality (declaration-information 'optimize env)))

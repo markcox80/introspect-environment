@@ -4,7 +4,7 @@
     '((:export #:compiler-macroexpand-1 #:compiler-macroexpand)
       (:export #:specialp #:variable-type #:function-type
                #:parse-macro #:parse-compiler-macro)
-      (:export #:constant-form-value)
+      (:export #:constant-form-p #:constant-form-value)
       (:export #:policy #:policy-quality)
       (:export #:typexpand #:typexpand-1))))
 

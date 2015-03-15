@@ -60,6 +60,9 @@
 	 ,@local-decls
 	 ,body))))
 
+(defun constant-form-p (form &optional env)
+  (constantp form env))
+
 ;;; alternate sbcl-specific definitions, probably less stable than the cltl2 half-standard
 
 #+(or)
