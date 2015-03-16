@@ -176,16 +176,32 @@
    "~s does not properly respect ~s declarations"
    'compiler-macroexpand
    'notinline)
-  (is-false
-   (nth-value
-    1
-    (in-environment env testmacro
-	(flet ((memb (&rest args) 11))
-	  (declare (ignorable #'memb))
-	  (testmacro))
-      (compiler-macroexpand '(memb x (foo) :test #'eq) env)))
-   "~s does not properly respect shadowing"
-   'compiler-macroexpand))
+
+  ;; Lexical shadowing of compiler macros.
+  (let* ((cm-called? nil) ; cm-called? is set to T if compiler macro for memb is called.
+         (current-hook *macroexpand-hook*)
+         (*macroexpand-hook* #'(lambda (fn form env)
+                                 (when (and (listp form)
+                                            (eql 'memb (first form))
+                                            (eql fn (compiler-macro-function 'memb)))
+                                   (setf cm-called? t))
+                                 (funcall current-hook fn form env))))
+    ;; Compile code with lexical memb.
+    (compile nil '(lambda ()
+                    (flet ((memb (&rest args)
+                             (print args)))
+                      (memb 1 2))))
+    (is-false cm-called?
+              "~s does not properly respect shadowing"
+              'compiler-macroexpand)
+
+    ;; Try again using global memb.
+    (setf cm-called? nil)
+    (compile nil '(lambda ()
+                    (memb 1 '(1 2 3))))
+    (is-true cm-called?
+             "The compiler macro for the function ~s was not called."
+             'memb)))
 
 (test compiler-macroexpand-hook
   (let* ((*counter* 0)
